@@ -1,10 +1,5 @@
 import Head from 'next/head';
 import '@/styles/globals.css';
-import '@/styles/landing.css';
-import '@/styles/text.css';
-import '@/styles/load.css';
-import '@/styles/end.css';
-import '@/styles/end2.css';
 
 export default function App({ Component, pageProps }) {
   return (

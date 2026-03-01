@@ -1,0 +1,71 @@
+import { useEffect, useState, useCallback } from 'react';
+import { useRouter } from 'next/router';
+
+export function useEnd2Logic() {
+  const router = useRouter();
+  const [scale, setScale] = useState(1);
+  const [touchStartY, setTouchStartY] = useState(null);
+
+  useEffect(() => {
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
+    const prevBodyOverscroll = document.body.style.overscrollBehaviorY;
+
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehaviorY = 'none';
+    document.body.style.overscrollBehaviorY = 'none';
+
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overscrollBehaviorY = prevHtmlOverscroll;
+      document.body.style.overscrollBehaviorY = prevBodyOverscroll;
+    };
+  }, []);
+
+  useEffect(() => {
+    const update = () => {
+      const next = Math.min(window.innerWidth / 402, window.innerHeight / 876);
+      setScale(Number.isFinite(next) ? next : 1);
+    };
+    update();
+    window.addEventListener('resize', update);
+    return () => window.removeEventListener('resize', update);
+  }, []);
+
+  const goHome = useCallback(() => {
+    router.push('/landing');
+  }, [router]);
+
+  const onTouchStart = useCallback((e) => {
+    setTouchStartY(e.touches[0].clientY);
+  }, []);
+
+  const onTouchEnd = useCallback(
+    (e) => {
+      if (touchStartY === null) return;
+      const endY = e.changedTouches[0].clientY;
+      if (touchStartY - endY > 80) goHome();
+      setTouchStartY(null);
+    },
+    [touchStartY, goHome]
+  );
+
+  const onWheel = useCallback(
+    (e) => {
+      if (e.deltaY > 50) goHome();
+    },
+    [goHome]
+  );
+
+  return {
+    scale,
+    goHome,
+    onTouchStart,
+    onTouchEnd,
+    onWheel,
+  };
+}
+

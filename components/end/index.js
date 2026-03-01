@@ -1,0 +1,85 @@
+import { useEndLogic } from './logic';
+import styles from './styles.module.css';
+
+const imgCardFront = 'https://www.figma.com/api/mcp/asset/4e65a0b4-ac2b-4825-9528-e185f30b0887';
+const imgCardBack = 'https://www.figma.com/api/mcp/asset/1e942af0-dbf6-4155-b3da-952595d7ab1f';
+const imgArrowFrame = 'https://www.figma.com/api/mcp/asset/12e3e69b-1d2f-4bb5-835d-355f89712ca3';
+
+const cx = (...names) => names.filter(Boolean).map((n) => styles[n]).filter(Boolean).join(' ');
+
+export default function EndScreen() {
+  const {
+    scale,
+    flipped,
+    isFadingOut,
+    onTouchStart,
+    onTouchEnd,
+    onWheel,
+    dateText,
+    quoteText,
+  } = useEndLogic();
+
+  return (
+    <div className={cx('end-page', isFadingOut && 'end-fadeout')} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd} onWheel={onWheel}>
+      <div
+        className={styles['end-canvas']}
+        style={{
+          transform: `translate(-50%, -50%) scale(${scale})`,
+        }}
+      >
+        <div className={styles['end-indicator']} aria-hidden="true">
+          <span className={styles['end-dot']} />
+          <span className={styles['end-dot']} />
+          <span className={cx('end-dot', 'active')} />
+        </div>
+
+        <div className={cx('end-flip', flipped && 'flipped')}>
+          <div className={styles['end-flip-inner']}>
+            <div className={cx('end-face', 'front')}>
+              <div className={cx('end-glass', 'front')} />
+              <div className={styles['end-front-img']} aria-hidden="true">
+                <img src={imgCardFront} alt="" />
+              </div>
+              <div className={styles['end-front-title']} aria-hidden="true">
+                <div>무라카미</div>
+                <div>하루키전</div>
+              </div>
+              <div className={styles['end-front-divider']} aria-hidden="true" />
+              <div className={styles['end-front-author']} aria-hidden="true">
+                안자이 이즈마루
+              </div>
+            </div>
+
+            <div className={cx('end-face', 'back')}>
+              <div className={cx('end-glass', 'back')} />
+              <div className={styles['end-back-title']} aria-hidden="true">
+                <div>무라카미</div>
+                <div>하루키전</div>
+              </div>
+              <div className={styles['end-back-divider']} aria-hidden="true" />
+              <div className={styles['end-back-author']} aria-hidden="true">
+                안자이 이즈마루
+              </div>
+              <div className={styles['end-back-img']} aria-hidden="true">
+                <img src={imgCardBack} alt="" />
+              </div>
+              <div className={styles['end-back-date']}>{dateText}</div>
+              <div className={styles['end-back-quote']}>{quoteText}</div>
+            </div>
+          </div>
+        </div>
+
+        {flipped && (
+          <>
+            <div className={styles['end-send-text']}>
+              <div>위로 슬라이드 하여</div>
+              <div>미디어 월로 전송</div>
+            </div>
+            <img className={styles['end-send-arrow']} src={imgArrowFrame} alt="" aria-hidden="true" />
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+

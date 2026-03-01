@@ -55,7 +55,7 @@
   background: rgba(100, 100, 100, 0.35);
 }
 
-.text-figma-dot.active {
+.active {
   background: #646464;
 }
 
@@ -163,7 +163,7 @@
   color: rgba(0, 0, 0, 0.25);
 }
 
-/* 슬라이드 하여 계속 진행 - 박스 밖, 백그라운드 하단 */
+/* 안내 문구(End 스타일과 동일) */
 .text-figma-slide-hint {
   position: fixed;
   top: 82.4vh;
@@ -190,3 +190,4 @@
   background: rgba(217, 217, 217, 0.44);
   border-radius: 17px;
 }
+

@@ -1,0 +1,100 @@
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { useRouter } from 'next/router';
+
+export function useTextLogic() {
+  const router = useRouter();
+  const [inputValue, setInputValue] = useState('');
+  const [touchStartY, setTouchStartY] = useState(null);
+  const [isExiting, setIsExiting] = useState(false);
+  const [dateText, setDateText] = useState('----.--.--');
+  const textareaRef = useRef(null);
+
+  const syncTextareaHeight = useCallback(() => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${el.scrollHeight}px`;
+  }, []);
+
+  useEffect(() => {
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
+    const prevBodyOverscroll = document.body.style.overscrollBehaviorY;
+
+    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overscrollBehaviorY = 'none';
+    document.body.style.overscrollBehaviorY = 'none';
+
+    return () => {
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.style.overscrollBehaviorY = prevHtmlOverscroll;
+      document.body.style.overscrollBehaviorY = prevBodyOverscroll;
+    };
+  }, []);
+
+  useEffect(() => {
+    const d = new Date();
+    setDateText(
+      `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`
+    );
+  }, []);
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(syncTextareaHeight);
+    return () => cancelAnimationFrame(raf);
+  }, [inputValue, syncTextareaHeight]);
+
+  const persistInput = useCallback(() => {
+    try {
+      localStorage.setItem('platforml:userText', inputValue);
+    } catch (_) {
+      // ignore
+    }
+  }, [inputValue]);
+
+  const goNext = useCallback(() => {
+    persistInput();
+    setIsExiting(true);
+    setTimeout(() => {
+      router.push('/load');
+    }, 500);
+  }, [persistInput, router]);
+
+  const handleTouchStart = useCallback((e) => {
+    setTouchStartY(e.touches[0].clientY);
+  }, []);
+
+  const handleTouchEnd = useCallback(
+    (e) => {
+      if (touchStartY === null) return;
+      const touchEndY = e.changedTouches[0].clientY;
+      const deltaY = touchStartY - touchEndY;
+      if (deltaY > 80) goNext();
+      setTouchStartY(null);
+    },
+    [touchStartY, goNext]
+  );
+
+  const handleWheel = useCallback(
+    (e) => {
+      if (e.deltaY > 50) goNext();
+    },
+    [goNext]
+  );
+
+  return {
+    inputValue,
+    setInputValue,
+    textareaRef,
+    syncTextareaHeight,
+    dateText,
+    isExiting,
+    handleTouchStart,
+    handleTouchEnd,
+    handleWheel,
+  };
+}
+

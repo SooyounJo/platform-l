@@ -35,7 +35,7 @@
   transition: background 0.2s;
 }
 
-.landing-dot.active {
+.active {
   background: #646464;
 }
 
@@ -59,10 +59,6 @@
   display: block;
 }
 
-.landing-title-line + .landing-title-line {
-  margin-top: 0;
-}
-
 /* Figma: 구분선 42px, 저자 left 76px 14px #646464 */
 .landing-divider-wrap {
   display: flex;
@@ -84,11 +80,6 @@
   color: #646464;
   line-height: 1.2;
   margin: 0;
-}
-
-.landing-gradient-fill {
-  flex: 0 0 auto;
-  min-height: 6vh;
 }
 
 /* 스와이프 영역 - 이미지2 수준, 박스가 적당히 올라온 위치 */
@@ -204,4 +195,8 @@
   font-size: clamp(1rem, 4vw, 1.25rem);
   line-height: 1;
 }
+
+/* 상태 클래스 export 보장 */
+.expanded {}
+.slide-up {}
 
